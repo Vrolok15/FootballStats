@@ -13,11 +13,20 @@ namespace FootballStats
         {
             string currentDirectory = Directory.GetCurrentDirectory();
             DirectoryInfo directory = new DirectoryInfo(currentDirectory);
-            var files = directory.GetFiles("*.txt");
-            foreach (var file in files)
+            var fileName = Path.Combine(directory.FullName, "data.txt");
+            var file = new FileInfo(fileName);
+            if (file.Exists)
             {
-                Console.WriteLine(file.Name);
+                using (var reader = new StreamReader(file.FullName))
+                {
+                    Console.SetIn(reader);
+                    Console.WriteLine(Console.ReadLine());
+                }
+
             }
+            
+            
+            
         }
     }
 }
