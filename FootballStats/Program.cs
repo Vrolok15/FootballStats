@@ -27,10 +27,10 @@ namespace FootballStats
             }
         }
 
-        public static List<string[]> ReadResults(string fileName)
+        public static List<GameResult> ReadResults(string fileName)
         {
 
-            var results = new List<string[]>();
+            var results = new List<GameResult>();
             using (var reader = new StreamReader(fileName))
             {
                 string line = "";
@@ -47,10 +47,20 @@ namespace FootballStats
                         gameResult.GameDate = gameDate;
                     }
 
-                    results.Add(values);
+                    gameResult.TeamName = values[1];
+
+                    HomeOrAway homeOrAway;
+                    if (Enum.TryParse(values[2], out homeOrAway))
+                    {
+                        gameResult.HomeOrAway = homeOrAway;
+                    }
+
+                    results.Add(gameResult);
                 }
             }
+
             return results;
+
         }
     }
 }
