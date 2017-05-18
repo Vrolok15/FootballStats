@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Globalization;
 
 namespace FootballStats
 {
@@ -71,6 +72,18 @@ namespace FootballStats
                     if (int.TryParse(values[6], out parseInt))
                     {
                         gameResult.ShotsOffGoal = parseInt;
+                    }
+                    if (int.TryParse(values[6], out parseInt))
+                    {
+                        gameResult.ShotsOffGoal = parseInt;
+                    }
+
+                    double possessionPercent;
+                    string convertDouble = values[7];
+                    
+                    if (double.TryParse(convertDouble, out possessionPercent))
+                    {
+                        gameResult.PossessionPercent = possessionPercent;
                     }
 
                     results.Add(gameResult);
