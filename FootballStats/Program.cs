@@ -23,7 +23,7 @@ namespace FootballStats
 
             foreach (var player in players)
             {
-                Console.WriteLine(player.first_name + " " + player.second_name);
+                Console.WriteLine(player.FirstName + " " + player.LastName + ", " + player.TeamName);
             }
         }
 
