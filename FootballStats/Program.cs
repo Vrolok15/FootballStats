@@ -15,25 +15,47 @@ namespace FootballStats
     {
         static void Main(string[] args)
         {
-            //string currentDirectory = Directory.GetCurrentDirectory();
-            //DirectoryInfo directory = new DirectoryInfo(currentDirectory);
-            //var fileName = Path.Combine(directory.FullName, "SoccerGameResults.csv");
-            //var fileContents = ReadResults(fileName);
-            //fileName = Path.Combine(directory.FullName, "players.json");
-            //var players = DeserializePlayers(fileName);
-            //var topTenPlayers = GetTopTenPlayers(players);
-            //foreach (var player in topTenPlayers)
-            //{
-            //    Console.WriteLine
-            //        (player.FirstName + " " + player.LastName 
-            //                          + "// PPG: " + player.PointsPerGame 
-            //                          + "// Team: " + player.TeamName);
-            //}
+            string currentDirectory = Directory.GetCurrentDirectory();
+            DirectoryInfo directory = new DirectoryInfo(currentDirectory);
+            var fileName = Path.Combine(directory.FullName, "SoccerGameResults.csv");
+            var fileContents = ReadResults(fileName);
+            fileName = Path.Combine(directory.FullName, "players.json");
+            var players = DeserializePlayers(fileName);
+            var topTenPlayers = GetTopTenPlayers(players);
+            foreach (var player in topTenPlayers)
+            {
+                Console.WriteLine
+                    (player.FirstName + " " + player.LastName
+                                      + " || PPG: " + player.PointsPerGame
+                                      + " || Team: " + player.TeamName + "\r\n");
+                List<NewsResult> newsResults = 
+                    GetNewsForPlayer
+                        (
+                        string.Format
+                            ("{0} {1}", 
+                        player.FirstName, 
+                        player.LastName
+                            )
+                        );
 
-            //fileName = Path.Combine(directory.FullName, "topten.json");
-            //SerializePlayersToFile(topTenPlayers, fileName);
+                foreach (var result in newsResults)
+                {
+                    Console.WriteLine(
+                        string.Format
+                            (
+                            "Date: {0:d}\nHeadline: {1}\nSummary: {2} \n",
+                            result.DatePublished,
+                            result.Headline,
+                            result.Summary 
+                            )
+                        );
+                }
+                Console.WriteLine("\n");
+                Console.ReadKey();
+            }
 
-            Console.WriteLine(GetNewsForPlayer("Diego Valeri"));
+            fileName = Path.Combine(directory.FullName, "topten.json");
+            SerializePlayersToFile(topTenPlayers, fileName);
 
             Console.ReadLine();
         }
@@ -167,22 +189,31 @@ namespace FootballStats
             }
         }
 
-        public static string GetNewsForPlayer(string playerName)
+        public static List<NewsResult> GetNewsForPlayer(string playerName)
         {
-            var webClient = new WebClient();
-            webClient.Headers.Add("Ocp-Apim-Subscription-Key", "4255698a51cf414f9cbf4ae02a13d972");
-            byte[] searchResults = webClient.DownloadData(
-                string.Format
+            var results = new List<NewsResult>();
+            using (var webClient = new WebClient())
+            {
+            
+                webClient.Headers.Add("Ocp-Apim-Subscription-Key", "4255698a51cf414f9cbf4ae02a13d972");
+                byte[] searchResults = webClient.DownloadData(
+                    string.Format
                     (
-                    "https://api.cognitive.microsoft.com/bing/v5.0/news/search?q={0}&mkt=en-us",
-                    playerName
+                        "https://api.cognitive.microsoft.com/bing/v5.0/news/search?q={0}&mkt=en-us",
+                        playerName
                     )
                 );
 
-            using (var stream = new MemoryStream(searchResults))
-            using (var reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
+                var serializer = new JsonSerializer();
+
+                using (var stream = new MemoryStream(searchResults))
+                using (var reader = new StreamReader(stream))
+                using (var jsonReader = new JsonTextReader(reader))
+                {
+                    results = serializer.Deserialize<NewsSearch>(jsonReader).NewsResults;
+                }
+
+                return results;
             }
         }
     }

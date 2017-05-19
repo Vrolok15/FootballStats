@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace FootballStats
 {
@@ -12,17 +13,21 @@ namespace FootballStats
         public string _type { get; set; }
         public string readLink { get; set; }
         public int totalEstimatedMatches { get; set; }
-        public Value[] value { get; set; }
+        [JsonProperty(PropertyName = "value")]
+        public List<NewsResult> NewsResults { get; set; }
     }
 
-    public class Value
+    public class NewsResult
     {
-        public string name { get; set; }
+        [JsonProperty(PropertyName = "name")]
+        public string Headline { get; set; }
         public string url { get; set; }
         public Image image { get; set; }
-        public string description { get; set; }
+        [JsonProperty(PropertyName = "description")]
+        public string Summary { get; set; }
         public Provider[] provider { get; set; }
-        public DateTime datePublished { get; set; }
+        [JsonProperty(PropertyName = "datePublished")]
+        public DateTime DatePublished { get; set; }
         public string category { get; set; }
     }
 
