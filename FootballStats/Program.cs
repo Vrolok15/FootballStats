@@ -20,11 +20,15 @@ namespace FootballStats
             var fileContents = ReadResults(fileName);
             fileName = Path.Combine(directory.FullName, "players.json");
             var players = DeserializePlayers(fileName);
-
-            foreach (var player in players)
+            var topTenPlayes = GetTopTenPlayes(players);
+            foreach (var player in topTenPlayes)
             {
-                Console.WriteLine(player.FirstName + " " + player.LastName + ", " + player.TeamName);
+                Console.WriteLine
+                    (player.FirstName + " " + player.LastName 
+                                      + "// PPG: " + player.PointsPerGame 
+                                      + "// Team: " + player.TeamName);
             }
+            Console.ReadLine();
         }
 
         public static string ReadFile(string fileName)
@@ -113,6 +117,24 @@ namespace FootballStats
             }
 
             return players;
+        }
+
+        public static List<Player> GetTopTenPlayes(List<Player> players)
+        {
+            var TopTenPlayers = new List<Player>();
+            players.Sort(new PlayerComparer());
+            int counter = 0;
+
+            foreach (var player in players)
+            {
+                TopTenPlayers.Add(player);
+                counter++;
+                if (counter >= 10)
+                {
+                    break;
+                }
+            }
+            return TopTenPlayers;
         }
     }
 }
