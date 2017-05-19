@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Globalization;
+using System.Net;
 using Newtonsoft.Json;
 
 namespace FootballStats
@@ -14,23 +15,25 @@ namespace FootballStats
     {
         static void Main(string[] args)
         {
-            string currentDirectory = Directory.GetCurrentDirectory();
-            DirectoryInfo directory = new DirectoryInfo(currentDirectory);
-            var fileName = Path.Combine(directory.FullName, "SoccerGameResults.csv");
-            var fileContents = ReadResults(fileName);
-            fileName = Path.Combine(directory.FullName, "players.json");
-            var players = DeserializePlayers(fileName);
-            var topTenPlayers = GetTopTenPlayers(players);
-            foreach (var player in topTenPlayers)
-            {
-                Console.WriteLine
-                    (player.FirstName + " " + player.LastName 
-                                      + "// PPG: " + player.PointsPerGame 
-                                      + "// Team: " + player.TeamName);
-            }
+            //string currentDirectory = Directory.GetCurrentDirectory();
+            //DirectoryInfo directory = new DirectoryInfo(currentDirectory);
+            //var fileName = Path.Combine(directory.FullName, "SoccerGameResults.csv");
+            //var fileContents = ReadResults(fileName);
+            //fileName = Path.Combine(directory.FullName, "players.json");
+            //var players = DeserializePlayers(fileName);
+            //var topTenPlayers = GetTopTenPlayers(players);
+            //foreach (var player in topTenPlayers)
+            //{
+            //    Console.WriteLine
+            //        (player.FirstName + " " + player.LastName 
+            //                          + "// PPG: " + player.PointsPerGame 
+            //                          + "// Team: " + player.TeamName);
+            //}
 
-            fileName = Path.Combine(directory.FullName, "topten.json");
-            SerializePlayersToFile(topTenPlayers, fileName);
+            //fileName = Path.Combine(directory.FullName, "topten.json");
+            //SerializePlayersToFile(topTenPlayers, fileName);
+
+            Console.WriteLine(GetGoogleHomePage());
 
             Console.ReadLine();
         }
@@ -149,6 +152,18 @@ namespace FootballStats
             using (var jsonWriter = new JsonTextWriter(writer))
             {
                 serializer.Serialize(jsonWriter, players);
+            }
+        }
+
+        public static string GetGoogleHomePage()
+        {
+            var webClient = new WebClient();
+            byte[] googleHome = webClient.DownloadData("https://www.google.com");
+
+            using (var stream = new MemoryStream(googleHome))
+            using (var reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
             }
         }
     }
